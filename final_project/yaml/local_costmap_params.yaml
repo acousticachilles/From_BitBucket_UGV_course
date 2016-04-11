@@ -6,7 +6,7 @@ update_frequency: 5.0
 publish_frequency: 2.0
 rolling_window: true
 
-width: 20
+width: 100
 height: 20
 resolution: 0.05
 
@@ -15,8 +15,8 @@ plugins:
   - {name: inflation, type: "costmap_2d::InflationLayer"}
 
 obstacles:
-  obstacle_range: 2.5
-  raytrace_range: 3.0
+  obstacle_range: 4.5
+  raytrace_range: 5.0
 
   observation_sources: lidar_scan    
   lidar_scan: 

@@ -8,8 +8,8 @@
   <include file="$(find ugv_course_launch)/launch/roundbot_final_project.launch" />
 
   <node pkg="final_project" type="local_planner" name="final_project_node" output="screen" >
-    <rosparam file="$(find final_project)/yaml/costmap_params.yaml" ns="global_costmap" />
-   <!-- <rosparam if="$(arg load_map)" file="$(find final_project)/yaml/loaded_costmap_params.yaml" ns="global_costmap" />-->
+    <rosparam unless="$(arg load_map)" file="$(find final_project)/yaml/costmap_params.yaml" ns="global_costmap" />
+   <rosparam if="$(arg load_map)" file="$(find final_project)/yaml/loaded_costmap_params.yaml" ns="global_costmap" />-->
 
     <rosparam file="$(find final_project)/yaml/global_planner_params.yaml" ns="global_planner" /> 
     <rosparam file="$(find final_project)/yaml/local_planner_params.yaml" ns="local_planner" />
@@ -33,7 +33,7 @@
 
   <node if="$(arg load_map)" pkg="amcl" type="amcl" name="amcl" >
     <rosparam file="$(find hector_example)/yaml/amcl_params.yaml" />
-    <param name="initial_pose_x" value="4.0" />
+    <param name="initial_pose_x" value="0.0" />
     <param name="initial_pose_y" value="0.0" />
     <param name="initial_pose_a" value="0.0" />
     <remap from="scan" to="/laser_front/scan_filtered" />

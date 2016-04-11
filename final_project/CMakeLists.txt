@@ -30,10 +30,6 @@ target_link_libraries(local_planner
   ${catkin_LIBRARIES}
 )
 
-add_executable(odometry src/odometry.cpp)
-target_link_libraries(odometry
-  ${catkin_LIBRARIES}
-)
 
 add_executable(customer src/customer.cpp)
 add_dependencies(customer ${PROJECT_NAME}_gencfg)

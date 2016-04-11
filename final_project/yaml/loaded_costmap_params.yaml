@@ -13,20 +13,13 @@ origin_x: -50
 origin_y: -50
 
 plugins:
-  - {name: obstacles, type: "costmap_2d::ObstacleLayer"}
+  - {name: saved_map, type: "costmap_2d::StaticLayer"}
   - {name: inflation, type: "costmap_2d::InflationLayer"}
 
-obstacles:
-  obstacle_range: 4.5
-  raytrace_range: 5.0
-
-  observation_sources: lidar_scan    
-  lidar_scan: 
-    topic: /laser_front/scan
-    sensor_frame: /laser_front
-    data_type: LaserScan
-    marking: true
-    clearing: true
+saved_map:
+  map_topic: map
+  unknown_cost_value: -1
+  lethal_cost_threshold: 100
   
 inflation:
   inflation_radius: 1.1
