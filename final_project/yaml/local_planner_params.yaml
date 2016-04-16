@@ -15,5 +15,5 @@ acc_lim_theta: 3.2
 gdist_scale: 0.8
 pdist_scale: 0.8
 occdist_scale: 0.01
-
+meter_scoring: true
 global_frame_id: /map

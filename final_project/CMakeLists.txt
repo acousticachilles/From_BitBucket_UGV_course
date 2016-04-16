@@ -31,11 +31,7 @@ target_link_libraries(local_planner
 )
 
 
-add_executable(customer src/customer.cpp)
-add_dependencies(customer ${PROJECT_NAME}_gencfg)
-target_link_libraries(customer
-  ${catkin_LIBRARIES}
-)
+
 
 
 add_executable(way_point_manager src/way_point_manager.cpp)

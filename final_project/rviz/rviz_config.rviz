@@ -11,6 +11,7 @@ Panels:
         - /global_costmap1
         - /MarkerArray1/Namespaces1
         - /slam_map1
+        - /Axes1
       Splitter Ratio: 0.5
     Tree Height: 435
   - Class: rviz/Selection
@@ -201,9 +202,9 @@ Visualization Manager:
       Enabled: true
       Invert Rainbow: false
       Max Color: 255; 255; 255
-      Max Intensity: 1.16607e-37
+      Max Intensity: 999999
       Min Color: 0; 0; 0
-      Min Intensity: 0
+      Min Intensity: 7.28675e-44
       Name: LaserScan
       Position Transformer: XYZ
       Queue Size: 10
@@ -254,13 +255,13 @@ Visualization Manager:
       Value: true
     - Class: rviz/InteractiveMarkers
       Enable Transparency: true
-      Enabled: false
+      Enabled: true
       Name: InteractiveMarkers
       Show Axes: true
       Show Descriptions: true
       Show Visual Aids: true
       Update Topic: /basic_controls/update
-      Value: false
+      Value: true
     - Alpha: 0.7
       Class: rviz/Map
       Color Scheme: map
@@ -268,6 +269,13 @@ Visualization Manager:
       Enabled: true
       Name: slam_map
       Topic: /map
+      Value: true
+    - Class: rviz/Axes
+      Enabled: true
+      Length: 5
+      Name: Axes
+      Radius: 0.1
+      Reference Frame: <Fixed Frame>
       Value: true
   Enabled: true
   Global Options:
@@ -293,22 +301,22 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 40.4119
+      Distance: 24.2348
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.06
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: -8.0902
-        Y: 1.74297
-        Z: 7.7902
+        X: 0.206094
+        Y: -1.84833
+        Z: 7.78131
       Name: Current View
       Near Clip Distance: 0.01
-      Pitch: 1.5648
+      Pitch: 1.3448
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 6.05592
+      Yaw: 6.14092
     Saved: ~
 Window Geometry:
   Displays:

@@ -15,8 +15,8 @@ plugins:
   - {name: inflation, type: "costmap_2d::InflationLayer"}
 
 obstacles:
-  obstacle_range: 4.5
-  raytrace_range: 5.0
+  obstacle_range: 8.5
+  raytrace_range: 8.0
 
   observation_sources: lidar_scan    
   lidar_scan: 
@@ -28,5 +28,5 @@ obstacles:
   
 inflation:
   inflation_radius: 1.1
-  cost_scaling_factor: 0.2
+  cost_scaling_factor: 0.7
 

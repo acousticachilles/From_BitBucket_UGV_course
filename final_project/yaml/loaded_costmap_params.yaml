@@ -14,6 +14,7 @@ origin_y: -50
 
 plugins:
   - {name: saved_map, type: "costmap_2d::StaticLayer"}
+  #- {name: obstacles, type: "costmap_2d::ObstacleLayer"} #insert this line will sort of pick up objects again, though planner seems to ignore it
   - {name: inflation, type: "costmap_2d::InflationLayer"}
 
 saved_map:
