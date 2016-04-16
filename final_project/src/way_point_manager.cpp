@@ -27,7 +27,7 @@ using namespace visualization_msgs;
 
 
 ros::Publisher pub_Waypoints;
-//ros::Publisher pub_markers;
+ros::Publisher pub_markers;
 ros::Publisher pub_path;
 ros::Publisher pub_currentPoint;
 //ros::Publisher pub_yaw;
@@ -79,56 +79,87 @@ void publishMarkerArray()
 	for(int aa = 0; aa < 9; aa++){
 
 
-			if(aa > 50){
-				new_marker.color.a = 0;
-				new_marker.color.r = 1.0;
-				new_marker.color.g = 0.0;
-				new_marker.color.b = 0.0;
-				new_marker.pose.position.x = 270.0;
-				new_marker.pose.position.y = -190;
-				new_marker.pose.position.z = 0;
-			}
-			else if(aa == 0){
+		if(aa == 0){
 
-				new_marker.color.a = 1;
-				new_marker.color.r = 1.0;
-				new_marker.color.g = 1.0;
-				new_marker.color.b = 1.0;
+			new_marker.color.a = 1;
+			new_marker.color.r = 1.0;
+			new_marker.color.g = 1.0;
+			new_marker.color.b = 1.0;
+			new_marker.scale.x = 1.0;
+			new_marker.scale.y = 1.0;
+			new_marker.scale.z = 1.0;
 
-				new_marker.pose.position.x = 1.4;
-				new_marker.pose.position.y = 7.2;
-				new_marker.pose.position.z = 0.5;
-				marker_msg.markers.push_back(new_marker);
-				new_marker.id++;
-				new_marker.pose.position.x = -5.0;
-				new_marker.pose.position.y = 6.4;
-				new_marker.pose.position.z = 0.5;
-				marker_msg.markers.push_back(new_marker);
-				new_marker.id++;
-				new_marker.pose.position.x = -17.0;
-				new_marker.pose.position.y = 5.4;
-				new_marker.pose.position.z = 0.5;
-				marker_msg.markers.push_back(new_marker);
+			new_marker.pose.position.x = 1.4;
+			new_marker.pose.position.y = 7.2;
+			new_marker.pose.position.z = 0.5;
 
-			}
+			new_marker.pose.orientation.x = 0;
+			new_marker.pose.orientation.y = 0;
+			new_marker.pose.orientation.z = 0;
+			new_marker.pose.orientation.w = 1;
 
+			new_marker.scale.x = 1.0;
+			new_marker.scale.y = 1.0;
+			new_marker.scale.z = 1.0;
 
-
+			marker_msg.markers.push_back(new_marker);
+			new_marker.header.frame_id = "/map";
+			new_marker.header.stamp = ros::Time::now();
+			new_marker.action = Marker::ADD;
 			new_marker.type = Marker::CYLINDER;
-			//new_marker.id++;
+			new_marker.id++;
+			new_marker.color.a = 1;
+			new_marker.color.r = 1.0;
+			new_marker.color.g = 1.0;
+			new_marker.color.b = 1.0;
 
-			currentMark.pose.position.x = marker_msg.markers[0].pose.position.x;
-			currentMark.pose.position.y = marker_msg.markers[0].pose.position.y;
-			currentMark.pose.position.z = 0;
-			currentMark.header = new_marker.header;
-			newX = new_marker.pose.position.x;
-			newY = new_marker.pose.position.y;
-			newZ = new_marker.pose.position.z;
+			new_marker.pose.position.x = -5.0;
+			new_marker.pose.position.y = 6.4;
+			new_marker.pose.position.z = 0.5;
+
+			new_marker.pose.orientation.x = 0;
+			new_marker.pose.orientation.y = 0;
+			new_marker.pose.orientation.z = 0;
+			new_marker.pose.orientation.w = 1;
+			new_marker.scale.x = 1.0;
+			new_marker.scale.y = 1.0;
+			new_marker.scale.z = 1.0;
+
+			marker_msg.markers.push_back(new_marker);
+			new_marker.header.frame_id = "/map";
+			new_marker.header.stamp = ros::Time::now();
+			new_marker.action = Marker::ADD;
+			new_marker.type = Marker::CYLINDER;
+			new_marker.id++;
+			new_marker.color.a = 1;
+			new_marker.color.r = 1.0;
+			new_marker.color.g = 1.0;
+			new_marker.color.b = 1.0;
+
+			new_marker.pose.position.x = -17.0;
+			new_marker.pose.position.y = 5.4;
+			new_marker.pose.position.z = 0.5;
+			new_marker.pose.orientation.x = 0;
+			new_marker.pose.orientation.y = 0;
+			new_marker.pose.orientation.z = 0;
+			new_marker.pose.orientation.w = 1;
+
+			marker_msg.markers.push_back(new_marker);
+			ROS_INFO_STREAM(marker_msg);
+		}
+
+
+		//new_marker.id++;
+
+		currentMark.pose.position.x = marker_msg.markers[0].pose.position.x;
+		currentMark.pose.position.y = marker_msg.markers[0].pose.position.y;
+		currentMark.pose.position.z = 0;
+		currentMark.header = new_marker.header;
+		newX = new_marker.pose.position.x;
+		newY = new_marker.pose.position.y;
+		newZ = new_marker.pose.position.z;
 
 	}
-	currentMarker.data.resize(2);
-	currentMarker.data[0] = marker_msg.markers[0].pose.position.x;
-	currentMarker.data[1] = marker_msg.markers[0].pose.position.y;
 	currentWay = 0;
 		//printf("this is x: %G \n y: %G \n z: %G \n", newX, newY, newZ);
 }
@@ -142,42 +173,44 @@ std_msgs/Header header
 void timerCallback(const ros::TimerEvent& event)
 {
 
-	//static tf::TransformBroadcaster broadcaster;
-	//transform.stamp_ = event.current_real;
-	//broadcaster.sendTransform(transform);
-	for (int i=0; i<marker_msg.markers.size(); i++){
-		marker_msg.markers[i].header.stamp = ros::Time::now();
+//	static tf::TransformBroadcaster broadcaster;
+//	transform.stamp_ = event.current_real;
+//	broadcaster.sendTransform(transform);
+	for (int i=0; i<marker_msg.markers.size(); i++)
+	{
+		marker_msg.markers[i].header.stamp = event.current_expected;
 	}
 	//if(onetimer){
 	//	onetimer = false;
-		//publishMarkerArray();
-		pub_Waypoints.publish(currentMark);
+	//publishMarkerArray();
+	//pub_Waypoints.publish(marker_msg);
 	//}
-		//pub_currentPoint.publish(currentWays);
+	//pub_currentPoint.publish(currentWays);
 	//pub_Waypoints.publish(wayOrray);
-	//pub_markers.publish(marker_msg);
-
+	pub_markers.publish(marker_msg);
+	ROS_INFO_STREAM(marker_msg);
 }
 
 void recvCurrentPos(const nav_msgs::Odometry::ConstPtr& msg)
 {
 	pub_currentPoint.publish(currentWays);
-	 xTarget = currentMark.pose.position.x;
-	 yTarget = currentMark.pose.position.y;
-	 epsilon = 1;
-	 xCurrent = msg->pose.pose.position.x;
-	 yCurrent = msg->pose.pose.position.y;
+	xTarget = currentMark.pose.position.x;
+	yTarget = currentMark.pose.position.y;
+	epsilon = 1;
+	xCurrent = msg->pose.pose.position.x;
+	yCurrent = msg->pose.pose.position.y;
 	//pub_Waypoints.publish(currentMark);
 	//ROS_INFO("marker %d at x: %G and y: %G \n", currentWay, xTarget, yTarget);
 
-	 // find the difference
-	      x_dif = pow((xTarget -xCurrent), 2);
-	 	 y_dif = pow((yTarget - yCurrent), 2);
+	// find the difference
+	x_dif = pow((xTarget -xCurrent), 2);
+	y_dif = pow((yTarget - yCurrent), 2);
 	 	 //use differnece to find distance
-	      distToMark = sqrt(x_dif + y_dif);
-	 //if pint hit, incremnt x (tracks current way point)
-	     if (distToMark <= 0.8)
-		{
+	distToMark = sqrt(x_dif + y_dif);
+
+	//if pint hit, incremnt x (tracks current way point)
+	if (distToMark <= 0.8)
+	{
 		currentWay++;
 		pub_currentPoint.publish(currentWays);
 		currentMark.pose.position.x = marker_msg.markers[currentWay].pose.position.x;
@@ -199,22 +232,18 @@ int main(int argc, char** argv)
 	ros::NodeHandle n;
 
 	int number_of_customers = 1;
-	transform.frame_id_ = "/world";
-	transform.child_frame_id_ = "markering";
+//	transform.frame_id_ = "/map";
+//	transform.child_frame_id_ = "/base_footprint";
 	ros::Timer timer = n.createTimer(ros::Duration(.2),timerCallback);
 	publishMarkerArray();
 
-	//for(int i = 0; i < number_of_customers; i++){
-		//initialize the publishers
-		//pub_markers = n.advertise<visualization_msgs::MarkerArray>("/marker_array", 1);		//for rviz
-		pub_Waypoints = n.advertise<geometry_msgs::PoseStamped>("/marker_waypoints", 1);	//for control alg.
-		pub_currentPoint = n.advertise<std_msgs::UInt16>("/current_point", 1);
+	//initialize the publishers
+	pub_markers = n.advertise<visualization_msgs::MarkerArray>("/marker_array", 1);		//for rviz
+	pub_Waypoints = n.advertise<geometry_msgs::PoseStamped>("/marker_waypoints", 1);	//for control alg.
+	pub_currentPoint = n.advertise<std_msgs::UInt16>("/current_point", 1);
 
-		//initialize the subscribers
-		ros::Subscriber sub_waypoints = n.subscribe("/odom", 1, recvCurrentPos);
-
-	//}
-
+	//initialize the subscribers
+	ros::Subscriber sub_waypoints = n.subscribe("/odom", 1, recvCurrentPos);
 
 
 	ros::spin();
