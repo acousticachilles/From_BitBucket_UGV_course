@@ -3,9 +3,15 @@
 <launch>
 
   	<arg name="load_map" default="false" />
+  	<arg name="case" default="one" />
 
  	<!-- <include file="$(find ugv_course_launch)/launch/roundbot_gmapping_sim.launch" /> -->
   	<include file="$(find ugv_course_launch)/launch/roundbot_final_project.launch" />
+  	
+  	<node pkg="customer_generators" type="customer_generator" name="customer_handle" output="screen" >
+   		<rosparam file="$(find customer_generators)/yaml/case_$(arg case).yaml" />
+  	</node>
+  	
   	
   	<node pkg="final_project" type="way_point_manager" name="the_way_point_manager" output="screen" />
   	
@@ -41,14 +47,15 @@
 	    <remap from="scan" to="/laser_front/scan_filtered" />
   	</node>
 
-
+ 
   	<node ns="laser_front" pkg="laser_filters" type="scan_to_scan_filter_chain" name="scan_filter" output="screen" respawn="true" >
     	<rosparam file="$(find hector_example)/yaml/laser_filter_params.yaml" />
   	</node>
 
- 	<node pkg="tf" type="static_transform_publisher" name="map2world" args="0 0 0 0 0 0 /world /map 20" /> 
+ 	<node pkg="tf" type="static_transform_publisher" name="map2world" args="0 0 0 0 0 0 /world /map 40" /> 
 
  	<node pkg="rviz" type="rviz" name="rviz" args="-d $(find final_project)/rviz/rviz_config.rviz" respawn="true" />
 
 
 </launch>
+

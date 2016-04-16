@@ -7,7 +7,9 @@ Panels:
         - /Global Options1
         - /TF1/Frames1
         - /TF1/Tree1
+        - /Path1
         - /MarkerArray1
+        - /Axes1
       Splitter Ratio: 0.5
     Tree Height: 435
   - Class: rviz/Selection
@@ -111,7 +113,7 @@ Visualization Manager:
     - Alpha: 1
       Buffer Length: 1
       Class: rviz/Path
-      Color: 25; 255; 0
+      Color: 255; 255; 0
       Enabled: true
       Line Style: Lines
       Line Width: 0.03
@@ -200,7 +202,7 @@ Visualization Manager:
       Max Color: 255; 255; 255
       Max Intensity: 999999
       Min Color: 0; 0; 0
-      Min Intensity: 0
+      Min Intensity: 7.00649e-45
       Name: LaserScan
       Position Transformer: XYZ
       Queue Size: 10
@@ -278,10 +280,10 @@ Visualization Manager:
         Z: 7.78131
       Name: Current View
       Near Clip Distance: 0.01
-      Pitch: 1.1348
+      Pitch: 1.2698
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 5.48092
+      Yaw: 5.98592
     Saved: ~
 Window Geometry:
   Displays:
