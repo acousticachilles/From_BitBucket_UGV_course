@@ -3,50 +3,62 @@
 <launch>
 
   <arg name="load_map" default="false" />
+  <arg name="case" default="one" />
 
  <!-- <include file="$(find ugv_course_launch)/launch/roundbot_gmapping_sim.launch" /> -->
-  <include file="$(find ugv_course_launch)/launch/roundbot_final_project.launch" />
-
-  <node pkg="final_project" type="local_planner" name="final_project_node" output="screen" >
-    <rosparam unless="$(arg load_map)" file="$(find final_project)/yaml/costmap_params.yaml" ns="global_costmap" />
-   <rosparam if="$(arg load_map)" file="$(find final_project)/yaml/loaded_costmap_params.yaml" ns="global_costmap" />-->
-
-    <rosparam file="$(find final_project)/yaml/global_planner_params.yaml" ns="global_planner" /> 
-    <rosparam file="$(find final_project)/yaml/local_planner_params.yaml" ns="local_planner" />
-    <rosparam file="$(find final_project)/yaml/local_costmap_params.yaml" ns="local_costmap" />
+	<include file="$(find final_project)/launch/final_project_start.launch" />
+	<include file="$(find ugv_course_launch)/launch/roundbot_final_project.launch" />
+  	<!--<include file="$(find customer_generators)/launch/customer_generators.launch" />-->
+  
+  
+ 	<node pkg="final_project" type="local_planner" name="final_project_node" output="screen" >
+	    <rosparam unless="$(arg load_map)" file="$(find final_project)/yaml/costmap_params.yaml" ns="global_costmap" />
+	  	<rosparam if="$(arg load_map)" file="$(find final_project)/yaml/loaded_costmap_params.yaml" ns="global_costmap" />-->
+	
+	    <rosparam file="$(find final_project)/yaml/global_planner_params.yaml" ns="global_planner" /> 
+	    <rosparam file="$(find final_project)/yaml/local_planner_params.yaml" ns="local_planner" />
+	    <rosparam file="$(find final_project)/yaml/local_costmap_params.yaml" ns="local_costmap" />
+  	</node>
+  	
+  <node pkg="customer_generators" type="customer_generator" name="customer_handle" output="screen" >
+    <rosparam file="$(find customer_generators)/yaml/case_$(arg case).yaml" />
   </node>
 
+  	<node pkg="state_space_example" type="state_space_example" name="odom_node" >
+	    <param name="parent_frame" value="odom" />
+	    <param name="child_frame" value="base_footprint" />
+	    <remap from="twist" to="/roundbot/twist" />
+  	</node>
+  
+  <!--	
+ 
+  	<node pkg="tf" type="static_transform_publisher" name="map2world" args="0 0 0 0 0 0 /world /map 20" />
+-->
+  	<node ns="laser_front" pkg="laser_filters" type="scan_to_scan_filter_chain" name="scan_filter" output="screen" respawn="true" >
+  	 	<rosparam file="$(find hector_example)/yaml/laser_filter_params.yaml" />
+ 	</node>
 
-  <node pkg="state_space_example" type="state_space_example" name="odom_node" >
-    <param name="parent_frame" value="odom" />
-    <param name="child_frame" value="base_footprint" />
-    <remap from="twist" to="/roundbot/twist" />
-  </node>
+  	<node unless="$(arg load_map)" pkg="hector_mapping" type="hector_mapping" name="hector_mapping" >
+	    <rosparam file="$(find hector_example)/yaml/hector_params.yaml" />
+	    <remap from="scan" to="/laser_front/scan_filtered" />
+  	</node>
 
-  <node unless="$(arg load_map)" pkg="hector_mapping" type="hector_mapping" name="hector_mapping" >
-    <rosparam file="$(find hector_example)/yaml/hector_params.yaml" />
-    <remap from="scan" to="/laser_front/scan_filtered" />
-  </node>
+  	<node if="$(arg load_map)" pkg="map_server" type="map_server" name="map_server" args="$(find hector_example)/yaml/map.yaml" />
+	<node pkg="tf" type="static_transform_publisher" name="world_to_map" args="0 0 0 0 0 0 /world /map 30" />
 
-  <node if="$(arg load_map)" pkg="map_server" type="map_server" name="map_server" args="$(find hector_example)/yaml/map.yaml" />
-
-
-  <node if="$(arg load_map)" pkg="amcl" type="amcl" name="amcl" >
-    <rosparam file="$(find hector_example)/yaml/amcl_params.yaml" />
-    <param name="initial_pose_x" value="0.0" />
-    <param name="initial_pose_y" value="0.0" />
-    <param name="initial_pose_a" value="0.0" />
-    <remap from="scan" to="/laser_front/scan_filtered" />
-  </node>
+ 	<node if="$(arg load_map)" pkg="amcl" type="amcl" name="amcl" >
+	    <rosparam file="$(find hector_example)/yaml/amcl_params.yaml" />
+	    <param name="initial_pose_x" value="0.0" />
+	    <param name="initial_pose_y" value="0.0" />
+	    <param name="initial_pose_a" value="0.0" />
+	    <remap from="scan" to="/laser_front/scan_filtered" />
+  	</node>
+	
 
 
-  <node ns="laser_front" pkg="laser_filters" type="scan_to_scan_filter_chain" name="scan_filter" output="screen" respawn="true" >
-    <rosparam file="$(find hector_example)/yaml/laser_filter_params.yaml" />
-  </node>
 
- <node pkg="tf" type="static_transform_publisher" name="map2world" args="0 0 0 0 0 0 /world /map 20" /> 
 
- <node pkg="rviz" type="rviz" name="rviz" args="-d $(find final_project)/rviz/rviz_config.rviz" respawn="true" />
+
 
 
 </launch>

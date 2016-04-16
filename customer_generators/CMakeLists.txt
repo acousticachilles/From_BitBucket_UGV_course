@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(final_project)
+project(customer_generators)
 
 set(${PROJECT_NAME}_CATKIN_DEPS
   costmap_2d
@@ -14,9 +14,6 @@ set(${PROJECT_NAME}_CATKIN_DEPS
 )
 find_package(catkin REQUIRED COMPONENTS ${${PROJECT_NAME}_CATKIN_DEPS})
 
-generate_dynamic_reconfigure_options(
-  cfg/customer_type.cfg
-)
 
 catkin_package()
 
@@ -25,16 +22,8 @@ include_directories(
   include
 )
 
-add_executable(local_planner src/local_planner.cpp)
-target_link_libraries(local_planner
+add_executable(customer_generator src/customer_generator.cpp)
+target_link_libraries(customer_generator 
   ${catkin_LIBRARIES}
 )
 
-
-
-
-
-add_executable(way_point_manager src/way_point_manager.cpp)
-target_link_libraries(way_point_manager
-  ${catkin_LIBRARIES}
-)

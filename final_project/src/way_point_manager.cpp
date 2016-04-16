@@ -9,6 +9,7 @@
 #include <std_msgs/Float64.h>
 #include <std_msgs/Float64MultiArray.h>
 #include <geometry_msgs/Twist.h>
+#include <geometry_msgs/PoseArray.h>
 #include <std_msgs/UInt16.h>
 #include <visualization_msgs/MarkerArray.h>
 
@@ -22,11 +23,15 @@
 
 #include <geometry_msgs/PoseStamped.h>
 #include <dynamic_reconfigure/server.h>
+
+#include <interactive_markers/interactive_marker_server.h>
+#include <interactive_markers/menu_handler.h>
+
 using namespace visualization_msgs;
 
 
 
-ros::Publisher pub_Waypoints;
+ros::Publisher pub_way_points;
 //ros::Publisher pub_markers;
 ros::Publisher pub_path;
 ros::Publisher pub_currentPoint;
@@ -36,6 +41,7 @@ UTMCoords ref_utm;
 MarkerArray marker_msg;
 std_msgs::UInt16 currentWays;
 uint currentWay;
+uint number_of_customers = 0;
 tf::StampedTransform transform;
 nav_msgs::Path path_msg;
 std_msgs::Float64MultiArray currentMarker;
@@ -43,7 +49,7 @@ std_msgs::Float64MultiArray currentMarker;
 //new position marker to nav_stack_example
 geometry_msgs::PoseStamped currentMark;
 bool onetimer = true;
-
+bool initial = true;
 void publishMarkerArray()
 {
 
@@ -144,24 +150,23 @@ void timerCallback(const ros::TimerEvent& event)
 	for (int i=0; i<marker_msg.markers.size(); i++){
 		marker_msg.markers[i].header.stamp = ros::Time::now();
 	}
-	//if(onetimer){
-	//	onetimer = false;
-		publishMarkerArray();
-		pub_Waypoints.publish(currentMark);
-	//}
+	//publishMarkerArray();
+	//pub_Waypoints.publish(currentMark);
+
 
 	//pub_Waypoints.publish(wayOrray);
 	//pub_markers.publish(marker_msg);
 
 }
 
-void recvCurrentPos(const std_msgs::Float64MultiArray::ConstPtr& currentPos){
+void recvCurrentPos(const std_msgs::Float64MultiArray::ConstPtr &currentPos)
+{
 	double xTarget = currentMarker.data[0];
 	double yTarget = currentMarker.data[1];
 	double epsilon = 1;
 	double xCurrent = currentPos->data[0];
 	double yCurrent = currentPos->data[1];
-	pub_Waypoints.publish(currentMark);
+	//pub_Waypoints.publish(currentMark);
 	/*if( ( fabs(xTarget - xCurrent) < 1) && ( fabs(yTarget - yCurrent) < 1)){
 		currentWay++;
 		currentMarker.data[0] = marker_msg.markers[currentWay].pose.position.x;
@@ -173,29 +178,44 @@ void recvCurrentPos(const std_msgs::Float64MultiArray::ConstPtr& currentPos){
 	}
 	*/
 }
+void extractCustomerPosition(const geometry_msgs::PoseArray::ConstPtr &pose_array)
+{
+	geometry_msgs::PoseStamped pose_to_target;
+	/**
+	 *
+	 *
+	 * PUT SOME FUNCTIONALITY IN HERE TO DETERMINE WHICH POSITION IS THE RIGHT CHOICE
+	 * 			EVENTUALLY THE WINNER WILL END UP BEING PUBLISHED IN
+	 * 						pub_way_points.publish(winning_customer);
+	 * 						or something
+	 *
+	 * 							but for now just get the second one...
+	 */
+	pose_to_target.pose = pose_array->poses[1];
+	pose_to_target.header = pose_array->header;
 
+	//publishing PosedStamped of winning customer
+	pub_way_points.publish(pose_to_target);
+
+}
 int main(int argc, char** argv)
 {
-	ros::init(argc, argv, "Customer");
+	ros::init(argc, argv, "manage_way_points");
 	ros::NodeHandle n;
 
-	int number_of_customers = 1;
-	transform.frame_id_ = "/world";
-	transform.child_frame_id_ = "markering";
+	number_of_customers = 1;
+	transform.frame_id_ = "/map";
+	transform.child_frame_id_ = "base_footprint";
 	ros::Timer timer = n.createTimer(ros::Duration(.1),timerCallback);
 
+	//initialize the publishers
+	//pub_markers = n.advertise<visualization_msgs::MarkerArray>("/marker_array", 1);		//for rviz
+	pub_way_points = n.advertise<geometry_msgs::PoseStamped>("/marker_waypoints", 1);	//for control alg.
+	pub_currentPoint = n.advertise<std_msgs::UInt16>("/current_point", 1);
 
-	for(int i = 0; i < number_of_customers; i++){
-		//initialize the publishers
-		//pub_markers = n.advertise<visualization_msgs::MarkerArray>("/marker_array", 1);		//for rviz
-		pub_Waypoints = n.advertise<geometry_msgs::PoseStamped>("/marker_waypoints", 1);	//for control alg.
-		pub_currentPoint = n.advertise<std_msgs::UInt16>("/current_point", 1);
-
-		//initialize the subscribers
-		ros::Subscriber sub_waypoints = n.subscribe("/current_position", 1, recvCurrentPos);
-	}
-
-
+	//initialize the subscribers
+	//ros::Subscriber sub_waypoints = n.subscribe("/current_position", 1, recvCurrentPos);
+	ros::Subscriber customer_message= n.subscribe("/customer_position_array", 1, extractCustomerPosition);
 
 	ros::spin();
 }

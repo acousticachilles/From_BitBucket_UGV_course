@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <package>
-  <name>final_project</name>
+  <name>customer_generators</name>
   <version>0.0.0</version>
-  <description>The final_project package</description>
+  <description>The use to make situations package</description>
   <maintainer email="abc@todo.todo">abc</maintainer>
   <license>TODO</license>
 

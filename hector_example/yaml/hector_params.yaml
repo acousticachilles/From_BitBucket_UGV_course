@@ -1,6 +1,6 @@
 base_frame: /base_footprint
 map_frame: /map
-odom_fram: /odom
+odom_frame: /odom
 map_resolution: 0.025
 map_size: 4000
 map_start_x: 0.5
