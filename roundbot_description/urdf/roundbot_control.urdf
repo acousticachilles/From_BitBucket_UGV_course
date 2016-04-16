@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+
+  <robot name="roundbot_control" >
+    <gazebo>
+        <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
+          <robotNamespace>/roundbot</robotNamespace>
+        </plugin>
+    </gazebo>
+
+    <transmission name="left_control">
+      <type>transmission_interface/SimpleTransmission</type>
+      <joint name="left_wheel" >
+        <hardwareInterface>VelocityJointInterface </hardwareInterface>
+      </joint>
+      <actuator name="left_wheel_actuator">
+        <hardwareInterface>EffortJointInterface </hardwareInterface>
+        <mechanicalReduction>1</mechanicalReduction>
+      </actuator>
+    </transmission>
+
+    <transmission name="right_control">
+      <type>transmission_interface/SimpleTransmission</type>
+      <joint name="right_wheel" >
+        <hardwareInterface>VelocityJointInterface </hardwareInterface>
+      </joint>
+      <actuator name="right_wheel_actuator">
+        <hardwareInterface>EffortJointInterface </hardwareInterface>
+        <mechanicalReduction>1</mechanicalReduction>
+      </actuator>
+    </transmission>
+
+  </robot>

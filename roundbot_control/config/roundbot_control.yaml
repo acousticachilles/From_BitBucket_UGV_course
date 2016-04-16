@@ -1,0 +1,32 @@
+roundbot:
+  # Publish all joint states -----------------------------------
+  joint_state_controller:
+    type: joint_state_controller/JointStateController
+    publish_rate: 50  
+
+  # Vehicle Controllers ---------------------------------------
+  wheel_controller:
+    type: roundbot_control/WheelSpeedController
+    left_joint: left_wheel
+    right_joint: right_wheel
+
+    max_speed: 60.0 #rad/s
+    max_accel: 8.0 #rad/s^2
+    max_decel: 20.0 #rad/s^2
+
+  diff_controller:
+    type: roundbot_control/DiffController
+    left_joint: left_wheel
+    right_joint: right_wheel
+
+    max_speed: 60.0 #rad/s
+    max_accel: 8.0 #rad/s^2
+    max_decel: 20.0 #rad/s^2
+
+    wheel_radius: 0.2 #m
+    wheel_separation: 0.9 #m
+
+  
+
+
+
