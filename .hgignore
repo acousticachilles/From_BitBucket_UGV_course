@@ -16,3 +16,5 @@ gtest/*
 *.blend
 *.pdf
 map.pgm
+hector_example/launch/_hector_example_real_data.launch
+final_project/src/old_customer.cpp

@@ -35,7 +35,7 @@
   	</node>
  --> 	
 	
-  	<node pkg="final_project" type="way_point_manager" name="the_way_point_manager" output="screen" />
+  	
   	<!--<node pkg="final_project" type="customer" name="customer_one" output="screen" />-->
 	
 	<node if="$(arg use_dynamic)" pkg="rqt_reconfigure" type="rqt_reconfigure" name="rqt_reconfigurelz" />

@@ -15,6 +15,8 @@
 #include <std_msgs/Float64MultiArray.h>
 #include <visualization_msgs/MarkerArray.h>
 
+
+#include <visualization_msgs/Marker.h>
 #include <interactive_markers/interactive_marker_server.h>
 #include <interactive_markers/menu_handler.h>
 
@@ -31,8 +33,11 @@
  */
 using namespace std;
 ros::Publisher publish_customers;
-vector<vector<int> > c_container;
+ros::Publisher pub_markers;
 
+
+vector<vector<int> > c_container;
+visualization_msgs::MarkerArray marker_msg;
 
 
 //Timer to publish all customer positions which the manager will use to generate its path planner
@@ -40,21 +45,52 @@ void timerCallback(const ros::TimerEvent &event)
 {
 	geometry_msgs::PoseArray customer_pose_array;
 	geometry_msgs::Pose customer_pose;
+	visualization_msgs::Marker new_marker;
+
+
+
+	new_marker.id = 0;
+	new_marker.header.frame_id = "/map";
+	new_marker.header.stamp = event.current_real;
 
 	int position = 0;
-
 	for (int i = 0; i < c_container.size(); i++)
 	{
+		if(i != 0)
+		{
+			//Marker data generic things
+			new_marker.id++;
+			new_marker.header.frame_id = "/map";
+			new_marker.header.stamp = event.current_real;
+		}
+
+		//PoseArray data
 		customer_pose_array.header.frame_id = "/map";
 		customer_pose_array.header.stamp = event.current_real;
+		customer_pose.orientation.w = 1;
+		customer_pose.orientation.x = 0;
+		customer_pose.orientation.y = 0;
+		customer_pose.orientation.z = 0;
+		customer_pose.position.z = 0;
+
+		//Marker data generic things
+		new_marker.action = visualization_msgs::Marker::ADD;
+		new_marker.type = visualization_msgs::Marker::CYLINDER;
+		new_marker.color.a = 1;
+		new_marker.color.r = 1.0;
+		new_marker.color.g = 1.0;
+		new_marker.color.b = 1.0;
+		new_marker.scale.x = 1.0;
+		new_marker.scale.y = 1.0;
+		new_marker.scale.z = 1.0;
+		new_marker.pose.orientation.x = 0;
+		new_marker.pose.orientation.y = 0;
+		new_marker.pose.orientation.z = 0;
+		new_marker.pose.orientation.w = 1;
+		new_marker.pose.position.z = 1;
 
 		for (int j = 0; j < c_container[i].size(); j++)
 		{
-			customer_pose.position.z = 0;
-			customer_pose.orientation.w = 1;
-			customer_pose.orientation.x = 0;
-			customer_pose.orientation.y = 0;
-			customer_pose.orientation.z = 0;
 			//ROS_INFO_STREAM(*col << "Heres some info ^^**^^__");
 			//ROS_INFO_STREAM("Heres some info ^^**^^__" << *col<<" "<<  "  " );
 			//ROS_INFO_STREAM(c_container[i][j]);
@@ -62,22 +98,25 @@ void timerCallback(const ros::TimerEvent &event)
 			if( (j % 2) == 0)
 			{
 				customer_pose.position.x = position;
+				new_marker.pose.position.x = position;
 				//ROS_INFO_STREAM(customer_pose.pose.position.x << "Heres some info ^^**^^__");
 			}
 			else
 			{
 				customer_pose.position.y = position;
+				new_marker.pose.position.y = position;
 				//ROS_INFO_STREAM(customer_pose.pose.position.y << "  ^^**^^__ Heres some info ");
 			}
 
 		}
 		customer_pose_array.poses.push_back(customer_pose);
-
-		//ROS_INFO_STREAM(customer_pose << "** seeing something yet **__**");
+		marker_msg.markers.push_back(new_marker);
+		//ROS_INFO_STREAM(customer_pose_array << "** seeing something yet **__**");
 	}
 	publish_customers.publish(customer_pose_array);
-}
+	pub_markers.publish(marker_msg);
 
+}
 
 int main(int argc, char** argv)
 {
@@ -96,6 +135,7 @@ int main(int argc, char** argv)
   ROS_INFO("P2: (%i, %i)", p2[0], p2[1]);
   ROS_INFO("P3: (%i, %i)", p3[0], p3[1]);
   publish_customers = n.advertise<geometry_msgs::PoseArray>("/customer_position_array", 1);
-  ros::Timer control_timer = n.createTimer(ros::Duration(1.0/2), timerCallback);
+  pub_markers = n.advertise<visualization_msgs::MarkerArray>("/marker_array", 1);		//for rviz
+  ros::Timer control_timer = n.createTimer(ros::Duration(0.5), timerCallback);
   ros::spin();
 }

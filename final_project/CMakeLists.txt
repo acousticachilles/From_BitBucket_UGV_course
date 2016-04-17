@@ -32,8 +32,6 @@ target_link_libraries(local_planner
 
 
 
-
-
 add_executable(way_point_manager src/way_point_manager.cpp)
 target_link_libraries(way_point_manager
   ${catkin_LIBRARIES}
