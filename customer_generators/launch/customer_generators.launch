@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+
+<launch>
+
+  
+  <arg name="case" default="one" />
+  <node pkg="customer_generators" type="customer_generator" name="customer_handle" output="screen" >
+    <rosparam file="$(find customer_generators)/yaml/case_$(arg case).yaml" />
+  </node>
+
+</launch>

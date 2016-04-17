@@ -1,0 +1,277 @@
+<?xml version="1.0"?>
+<!-- created with Phobos 0.7 -->
+  <robot name="roundbot" xmlns:xacro="http://www.ros.org/wiki/xacro" >
+
+    <xacro:include filename="$(find roundbot_description)/urdf/roundbot_control.urdf"/>
+    <xacro:include filename="$(find roundbot_description)/urdf/roundbot_friction.urdf"/>
+    
+    <xacro:if value="$(arg use_sensors)" >
+      <xacro:include filename="$(find roundbot_description)/urdf/roundbot_sensors.urdf.xacro"/>
+    </xacro:if>
+
+    <!-- Sensors -->
+    <xacro:macro name="gps_antenna" params="link_name x y z" >
+      <link name="${link_name}" >
+        <visual>
+          <origin xyz="0 0 0" rpy="0 0 0" />
+          <geometry>
+            <cylinder radius="0.1" length="0.05" />
+          </geometry>
+        </visual>
+        <collision>
+          <origin xyz="0 0 0" rpy="0 0 0" />
+          <geometry>
+            <cylinder radius="0.1" length="0.05" />
+          </geometry>
+        </collision>
+        <inertial>
+          <origin xyz="0 0 0" rpy="0 0 0"/>
+          <mass value="1.0"/>
+          <inertia ixx="0.037227" ixy="0" ixz="0" iyy="0.037227" iyz="0" izz="0.063878"/>
+        </inertial>
+      </link>
+      <joint name="${link_name}" type="fixed" >
+        <origin xyz="${x} ${y} ${z}" rpy="0 0 0" />
+        <parent link="base_footprint" />
+        <child link="${link_name}" />
+      </joint>
+      <gazebo>
+        <plugin name="gps_plugin" filename="libgps_plugin.so" >
+          <link_name>${link_name}</link_name>
+          <ant_offset_x>${x}</ant_offset_x>
+          <ant_offset_y>${y}</ant_offset_y>
+          <ant_offset_z>${z}</ant_offset_z>
+          <update_rate>$(arg gps_rate)</update_rate>
+          <pub_heading>$(arg pub_heading)</pub_heading>
+        </plugin>
+      </gazebo>
+    </xacro:macro>
+    
+    <xacro:if value="$(arg gps)" >
+      <xacro:gps_antenna link_name="gps" x="0" y="0" z="0.65" />
+    </xacro:if>
+
+    <gazebo>
+      <plugin name="pose_plugin" filename="libpose_plugin.so" >
+        <xacro:if value="$(arg pub_tf)">      
+          <pub_tf>1</pub_tf>
+        </xacro:if>
+        <xacro:unless value="$(arg pub_tf)">      
+          <pub_tf>0</pub_tf>
+        </xacro:unless>
+        <xacro:if value="$(arg pub_odom)" >
+          <pub_odom>1</pub_odom>
+        </xacro:if>
+        <xacro:unless value="$(arg pub_odom)" >
+          <pub_odom>0</pub_odom>
+        </xacro:unless>
+        <twist_publish_rate>50.0</twist_publish_rate>
+      </plugin>
+    </gazebo>
+
+   <link name="base_footprint">
+      <inertial>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <mass value="0.1"/>
+        <inertia ixx="0.01" ixy="0" ixz="0" iyy="0.01" iyz="0" izz="0.01"/>
+      </inertial>
+    </link>
+
+    <link name="base_link">
+      <inertial>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <mass value="0.001"/>
+        <inertia ixx="0.16" ixy="0" ixz="0" iyy="0.16" iyz="0" izz="0.24"/>
+      </inertial>
+      <visual name="Cylinder.007">
+        <origin xyz="-0.32 0 -0.12" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="package://roundbot_description/meshes/Cylinder.011.dae" scale="0.05 0.05 0.2"/>
+        </geometry>
+        <material name="Material.011"/>
+      </visual>
+      <visual name="Cylinder.008">
+        <origin xyz="0.32 0 -0.12" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="package://roundbot_description/meshes/Cylinder.012.dae" scale="0.05 0.05 0.2"/>
+        </geometry>
+        <material name="Material.012"/>
+      </visual>
+      <visual name="Cylinder.009">
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="package://roundbot_description/meshes/Cylinder.013.dae" scale="0.4 0.4 0.2"/>
+        </geometry>
+        <material name="Material.015"/>
+      </visual>
+      <visual name="Sphere">
+        <origin xyz="0.32 0 -0.35" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="package://roundbot_description/meshes/Sphere.dae" scale="0.05 0.05 0.05"/>
+        </geometry>
+        <material name="Material.013"/>
+      </visual>
+      <visual name="Sphere.001">
+        <origin xyz="-0.32 0 -0.35" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="package://roundbot_description/meshes/Sphere.001.dae" scale="0.05 0.05 0.05"/>
+        </geometry>
+        <material name="Material.014"/>
+      </visual>
+      <collision name="Sphere.002">
+        <origin xyz="0.32 0 -0.35" rpy="0 0 0"/>
+        <geometry>
+          <sphere radius="0.05"/>
+        </geometry>
+      </collision>
+      <collision name="Sphere.003">
+        <origin xyz="-0.32 0 -0.35" rpy="0 0 0"/>
+        <geometry>
+          <sphere radius="0.05"/>
+        </geometry>
+      </collision>
+      <collision name="chassis_collision">
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <cylinder radius="0.4" length="0.4"/>
+        </geometry>
+      </collision>
+    </link>
+
+    <link name="left_wheel">
+      <inertial>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <mass value="10.0"/>
+        <inertia ixx="0.010833" ixy="0" ixz="0" iyy="0.010833" iyz="0" izz="0.02"/>
+      </inertial>
+      <visual name="Cylinder.004">
+        <origin xyz="0 0 0.05" rpy="1.570796 0 1.570796"/>
+        <geometry>
+          <mesh filename="package://roundbot_description/meshes/Cylinder.008.dae" scale="0.02 0.02 0.15"/>
+        </geometry>
+        <material name="Material.008"/>
+      </visual>
+      <visual name="Cylinder.005">
+        <origin xyz="0 0 0" rpy="-3.141593 0 0"/>
+        <geometry>
+          <mesh filename="package://roundbot_description/meshes/Cylinder.009.dae" scale="0.2 0.2 0.05"/>
+        </geometry>
+        <material name="Material.009"/>
+      </visual>
+      <visual name="Cylinder.006">
+        <origin xyz="0 0 0.05" rpy="1.570796 0 0"/>
+        <geometry>
+          <mesh filename="package://roundbot_description/meshes/Cylinder.010.dae" scale="0.02 0.02 0.15"/>
+        </geometry>
+        <material name="Material.010"/>
+      </visual>
+      <collision name="left_wheel_collision">
+        <origin xyz="0 0 0" rpy="-3.141593 0 0"/>
+        <geometry>
+          <cylinder radius="0.2" length="0.1"/>
+        </geometry>
+      </collision>
+    </link>
+
+    <link name="right_wheel">
+      <inertial>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <mass value="10.0"/>
+        <inertia ixx="0.010833" ixy="0" ixz="0" iyy="0.010833" iyz="0" izz="0.02"/>
+      </inertial>
+      <visual name="Cylinder.001">
+        <origin xyz="0 0 -0.05" rpy="1.570796 0 1.570796"/>
+        <geometry>
+          <mesh filename="package://roundbot_description/meshes/Cylinder.003.dae" scale="0.02 0.02 0.15"/>
+        </geometry>
+        <material name="Material.003"/>
+      </visual>
+      <visual name="Cylinder.002">
+        <origin xyz="0 0 0" rpy="-3.141593 0 0"/>
+        <geometry>
+          <mesh filename="package://roundbot_description/meshes/Cylinder.002.dae" scale="0.2 0.2 0.05"/>
+        </geometry>
+        <material name="Material.002"/>
+      </visual>
+      <visual name="Cylinder.003">
+        <origin xyz="0 0 -0.05" rpy="1.570796 0 0"/>
+        <geometry>
+          <mesh filename="package://roundbot_description/meshes/Cylinder.004.dae" scale="0.02 0.02 0.15"/>
+        </geometry>
+        <material name="Material.004"/>
+      </visual>
+      <collision name="right_wheel_collision">
+        <origin xyz="0 0 0" rpy="-3.141593 0 0"/>
+        <geometry>
+          <cylinder radius="0.2" length="0.1"/>
+        </geometry>
+      </collision>
+    </link>
+
+    <joint name="base_link" type="fixed">
+      <origin xyz="0 0 0.4" rpy="0 0 0"/>
+      <parent link="base_footprint"/>
+      <child link="base_link"/>
+    </joint>
+
+    <joint name="left_wheel" type="continuous">
+      <origin xyz="0 0.45 -0.2" rpy="-1.570796 0 0"/>
+      <parent link="base_link"/>
+      <child link="left_wheel"/>
+      <axis xyz="0 0 1.0"/>
+      <limit effort="5000.0" velocity="60.0"/>
+    </joint>
+
+    <joint name="right_wheel" type="continuous">
+      <origin xyz="0 -0.45 -0.2" rpy="-1.570796 0 0"/>
+      <parent link="base_link"/>
+      <child link="right_wheel"/>
+      <axis xyz="0 0 1.0"/>
+      <limit effort="5000.0" velocity="60.0"/>
+    </joint>
+
+    <material name="Material.002">
+      <color rgba="0 0 0.8 1.0"/>
+    </material>
+
+    <material name="Material.003">
+      <color rgba="0.8 0 0 1.0"/>
+    </material>
+
+    <material name="Material.004">
+      <color rgba="0.8 0 0 1.0"/>
+    </material>
+
+    <material name="Material.008">
+      <color rgba="0.8 0 0 1.0"/>
+    </material>
+
+    <material name="Material.009">
+      <color rgba="0 0 0.8 1.0"/>
+    </material>
+
+    <material name="Material.010">
+      <color rgba="0.8 0 0 1.0"/>
+    </material>
+
+    <material name="Material.011">
+      <color rgba="0 0.8 0 1.0"/>
+    </material>
+
+    <material name="Material.012">
+      <color rgba="0 0.8 0 1.0"/>
+    </material>
+
+    <material name="Material.013">
+      <color rgba="0 0.8 0 1.0"/>
+    </material>
+
+    <material name="Material.014">
+      <color rgba="0 0.8 0 1.0"/>
+    </material>
+
+    <material name="Material.015">
+      <color rgba="0.008067 0.1 0.012966 1.0"/>
+    </material>
+
+  </robot>

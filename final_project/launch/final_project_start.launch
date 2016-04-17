@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+
+<launch>
+	
+	<arg name="use_dynamic" default="false" />
+
+	
+	<!--<include file="$(find hector_example)/launch/hector_example.launch" />-->
+	
+<!--	
+	<node pkg="tf" type="static_transform_publisher" name="world_to_map" args="0 0 0 0 0 0 /world /map 30" />
+-->
+
+<!--
+	<node pkg="state_space_example" type="state_space_example" name="odom_node" >
+    	<remap from="twist" to="/roundbot/twist" />
+  	</node>
+-->
+
+	<node pkg="rviz" type="rviz" name="rviz" respawn="true" args="-d $(find final_project)/rviz/rviz_config.rviz" />
+
+
+<!--	
+	<node pkg="final_project" type="local_planner" name="navigation_node" output="screen" >
+	    <rosparam file="$(find final_project)/yaml/costmap_params.yaml" ns="global_costmap" />
+	    <rosparam file="$(find final_project)/yaml/global_planner_params.yaml" ns="global_planner" /> 
+	    <rosparam file="$(find final_project)/yaml/local_planner_params.yaml" ns="local_planner" />
+	    <rosparam file="$(find final_project)/yaml/local_costmap_params.yaml" ns="local_costmap" />
+  	</node>
+ --> 
+ <!--
+	<node pkg="final_project" type="local_planner" name="local_planner" output="screen" >
+    	<rosparam file="$(find final_project)/yaml/local_planner_params.yaml" ns="local_planner" />
+    	<rosparam file="$(find final_project)/yaml/local_costmap_params.yaml" ns="local_costmap" />
+  	</node>
+ --> 	
+	
+  	<node pkg="final_project" type="way_point_manager" name="the_way_point_manager" output="screen" />
+  	<!--<node pkg="final_project" type="customer" name="customer_one" output="screen" />-->
+	
+	<node if="$(arg use_dynamic)" pkg="rqt_reconfigure" type="rqt_reconfigure" name="rqt_reconfigurelz" />
+  
+</launch>

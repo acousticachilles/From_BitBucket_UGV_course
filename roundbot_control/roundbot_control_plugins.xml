@@ -1,0 +1,16 @@
+<class_libraries>
+  <library path="lib/libwheel_speed_controller">
+    <class name="roundbot_control/WheelSpeedController" type="roundbot_control::WheelSpeedController" base_class_type="controller_interface::ControllerBase" >
+      <description>
+        Simple control of each individual wheel speed.
+      </description>
+    </class>
+  </library>
+  <library path="lib/libdiff_controller">
+    <class name="roundbot_control/DiffController" type="roundbot_control::DiffController" base_class_type="controller_interface::ControllerBase" >
+      <description>
+        Receives twist command and applies differential drive kinematics.
+      </description>
+    </class>
+  </library>
+</class_libraries>

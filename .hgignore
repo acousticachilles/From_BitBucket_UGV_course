@@ -1,0 +1,18 @@
+syntax: glob
+*~
+.cproject
+.project
+.metadata/*
+catkin_generated/*
+devel/*
+*CMakeCache.txt
+CMakeFiles/*
+*.cmake
+*Makefile
+*.bag
+gtest/*
+*.dae
+*.3ds
+*.blend
+*.pdf
+map.pgm

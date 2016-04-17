@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+
+<robot name="roundbot_friction">
+
+  <!--<xacro:property name="wheel_friction" value="2000.0" />-->
+
+  <gazebo reference="base_link" >
+    <mu1>0.0</mu1>
+    <mu2>0.0</mu2>
+  </gazebo>
+
+  <gazebo reference="left_wheel" >
+    <mu1>1000.0</mu1>
+    <mu2>1000.0</mu2>
+  </gazebo>
+
+  <gazebo reference="right_wheel" >
+    <mu1>1000.0</mu1>
+    <mu2>1000.0</mu2>
+  </gazebo>
+
+</robot>

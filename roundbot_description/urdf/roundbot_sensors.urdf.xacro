@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+
+<robot name="roundbot_sensors" xmlns:xacro="http://www.ros.org/wiki/xacro">
+  <xacro:include filename="$(find robot_sensors)/urdf/hokuyo_urg_04.urdf.xacro" />
+  <xacro:include filename="$(find robot_sensors)/urdf/hokuyo_ust_10.urdf.xacro" />
+  <xacro:include filename="$(find robot_sensors)/urdf/hokuyo_utm_30.urdf.xacro" />
+  
+  <xacro:hokuyo_utm_30 name="laser_front" parent_frame="base_link" x="0.45" y="0.0" z="0.0" roll="0.0" pitch="0.0" yaw="0.0" />
+  <xacro:hokuyo_urg_04 name="laser_rear" parent_frame="base_link" x="-0.45" y="0.0" z="0.0" roll="0.0" pitch="0.0" yaw="3.1415926" />
+</robot>
