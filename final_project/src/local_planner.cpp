@@ -13,10 +13,13 @@
 #include <std_msgs/Float64MultiArray.h>
 #include <visualization_msgs/MarkerArray.h>
 
+#include <geometry_msgs/PoseArray.h>
+#include <geometry_msgs/Pose.h>
 #include <interactive_markers/interactive_marker_server.h>
 #include <interactive_markers/menu_handler.h>
 
 // Class pointers
+ros ::Publisher pub;
 base_local_planner::TrajectoryPlannerROS* local_planner;
 navfn::NavfnROS* global_planner;
 costmap_2d::Costmap2DROS* local_costmap;
@@ -24,12 +27,47 @@ tf::TransformListener* listener;
 costmap_2d::Costmap2DROS* global_costmap;
 // Publishers
 ros::Publisher pub_twist;
+ros::Publisher pub_twisttest;
 ros::Publisher pub_goal;
+ros::Publisher pub_shortestPash;
+
 tf::Stamped<tf::Pose> pose_stamped;
+double xTarget;
+double yTarget;
+double epsilon ;
+double xCurrent ;
+
+double yCurrent ;
+double xCurrent1 ;
+double yCurrent1 ;
+double x_dif ;
+double y_dif ;
+long double distToTarget[6];
+long double distCalc[6];
+double distToMark;
+int h = 0;
+int firstGo = 0;
 // Current goal set by Rviz
 geometry_msgs::PoseStamped current_goal;
+geometry_msgs::PoseStamped temp_st;
+geometry_msgs::PoseStamped temp_st1;
+geometry_msgs::PoseStamped temp_st2;
+geometry_msgs::PoseStamped home;
+geometry_msgs::PoseStamped spath;
 //std_msgs::Float64MultiArray current_goal;
+std::vector<geometry_msgs::PoseStamped> plan;
+std::vector<geometry_msgs::PoseStamped> s_path;
+std::vector<geometry_msgs::PoseStamped> plantopoint[6];
+std::vector<geometry_msgs::PoseStamped> s2to3;
+std::vector<geometry_msgs::PoseStamped> s3to1;
+geometry_msgs::PoseArray something;
+geometry_msgs::Pose something2;
+std::vector<geometry_msgs::PoseStamped> home1;
+std::vector<geometry_msgs::PoseStamped> home2;
+std::vector<geometry_msgs::PoseStamped> home3;
 
+std::vector<geometry_msgs::PoseStamped> plan23;
+geometry_msgs::Twist twist_msgtest;
 // Booleans to wait for valid inputs before acting
 bool active = true;
 bool valid_goal = false;
@@ -101,6 +139,142 @@ void timerCallback_new(const ros::TimerEvent& event)
 	}
 }
 
+
+
+
+
+void parseCustomers(const geometry_msgs::PoseArray::ConstPtr  &pose_array)
+{
+
+	//temp space
+if (firstGo ==0)
+{ something.poses.clear();
+		temp_st.header.frame_id = "/map";
+		temp_st1.header.frame_id = "/map";
+		temp_st2.header.frame_id = "/map";
+		home.header.frame_id = "/map";
+		temp_st.pose =pose_array->poses[0];
+		temp_st1.pose =pose_array->poses[1];
+		temp_st2.pose =pose_array->poses[2];
+		home.pose.position.x =0;
+
+		home.pose.position.y =0;
+		something.poses.size() ;
+	//	something.poses.insert(temp_st.pose);
+		//something.poses.resize()
+		//something.poses[0].position.x=temp_st.pose.position.x ;
+		something.poses.push_back(temp_st.pose);
+		something.poses.push_back(temp_st1.pose);
+		something.poses.push_back(temp_st2.pose);
+	    global_planner->makePlan(temp_st, temp_st1, plantopoint[0]);
+	    global_planner->makePlan( temp_st1, temp_st2,plantopoint[1]);
+	    global_planner->makePlan(temp_st, temp_st2, plantopoint[2]);
+	    global_planner->makePlan( home, temp_st,plantopoint[3]);
+	    global_planner->makePlan( home, temp_st1,plantopoint[4]);
+	    global_planner->makePlan( home, temp_st2,plantopoint[5]);
+
+
+
+	    	//x = msg->poses.size();
+
+
+	    int y = 0;
+	    while (y <6)
+	    {
+	    	distToTarget[y] = 0;
+	    	int x = 1;
+	    	while ( x < plantopoint[y].size() )
+	    	{
+
+
+	    		xCurrent = plantopoint[y][x-1].pose.position.x;
+	    		yCurrent = plantopoint[y][x-1].pose.position.y;
+
+
+	    		xCurrent1 = plantopoint[y][x].pose.position.x;
+	    		yCurrent1 = plantopoint[y][x].pose.position.y;
+
+
+	    		x_dif = pow((xCurrent1 -xCurrent), 2);
+	    		y_dif = pow((yCurrent1 - yCurrent), 2);
+	    		distToTarget[y] =distToTarget[y] + sqrt(x_dif + y_dif);
+
+	    		x = x+ 1;
+	    	}
+
+
+	    	y++;
+	    }
+	    distCalc[1] =distToTarget[5]+distToTarget[3]+distToTarget[1]+distToTarget[0];
+	    distCalc[0] = distToTarget[3]+distToTarget[4]+distToTarget[1]+distToTarget[2];
+	    distCalc[2] = distToTarget[5]+distToTarget[4]+distToTarget[0]+distToTarget[2];
+
+
+	    something.poses[0].position.x=temp_st.pose.position.x ;
+	    something.poses[1].position.x=temp_st2.pose .position.x;
+	    something.poses[2].position.x = temp_st1.pose.position.x;
+	    something.poses[0].position.y=temp_st.pose.position.y ;
+	    something.poses[1].position.y=temp_st2.pose .position.y;
+	    something.poses[2].position.y = temp_st1.pose.position.y;
+
+	    if (distCalc[1] <  distCalc[0])
+	    {
+	    	distCalc[0] = distCalc[1];
+		    something.poses[0].position.x=temp_st.pose.position.x ;
+		    something.poses[1].position.x=temp_st1.pose.position.x ;
+		    something.poses[2].position.x = temp_st2.pose.position.x;
+		    something.poses[0].position.y=temp_st.pose.position.y ;
+		    something.poses[1].position.y=temp_st1.pose.position.y ;
+		    something.poses[2].position.y = temp_st2.pose.position.y;
+
+	    }
+	    	if ( distCalc[2] < distCalc[0])
+	    	{
+	    	    something.poses[0].position.x=temp_st1.pose.position.x ;
+	    	    something.poses[1].position.x=temp_st.pose.position.x ;
+	    	    something.poses[2].position.x = temp_st2.pose.position.x;
+	    	    something.poses[0].position.y=temp_st1.pose.position.y ;
+	    	    something.poses[1].position.y=temp_st.pose.position.y ;
+	    	    something.poses[2].position.y = temp_st2.pose.position.y;
+
+	    	}
+
+
+	    twist_msgtest.linear.x =distToTarget[0];
+	    twist_msgtest.linear.y =distToTarget[1];
+	    twist_msgtest.linear.z =distToTarget[2];
+	    twist_msgtest.angular.x =distToTarget[3];
+	    twist_msgtest.angular.y =distToTarget[4];
+	    twist_msgtest.angular.z =distToTarget[5];
+	    firstGo =1;
+}
+pub_shortestPash.publish(something);
+pub_twisttest.publish(twist_msgtest);
+	//pose_to_target.header.stamp =  ros::Time::now();
+	//pose_to_target.header.frame_id = "/map";
+	//ros::Duration(1.5).sleep();
+	if(pose_array->header.seq > 10){
+		active = true;
+		//ROS_INFO_STREAM(pose_to_target);
+		//ros::Duration(1.5).sleep();
+		//publishMarkerArray();
+		//publishing PosedStamped of winning customer
+		//pub_way_points.publish(pose_to_target);
+//	}
+	//if(currentWay < pose_array->poses.size())
+	//{
+	//	pose_to_target.pose = pose_array->poses[currentWay];
+
+	//}
+	//else
+	//{
+	//	pose_to_target.pose.position.x = 0.0;
+	//	pose_to_target.pose.position.y = 0.0;
+	//}
+//	pub_way_points.publish(pose_to_target);
+
+}
+	}
 // Timer to re-publish goal such that the global planner reacts to
 // new local_costmap information
 void goalCallback(const ros::TimerEvent& event)
@@ -117,8 +291,12 @@ void goalCallback(const ros::TimerEvent& event)
 	    robot_pose.pose.position.y = pose_stamped.getOrigin().y();
 	    robot_pose.pose.position.z = pose_stamped.getOrigin().z();
 
-	    std::vector<geometry_msgs::PoseStamped> plan;
+
 	    global_planner->makePlan(robot_pose, current_goal, plan);
+
+
+
+
 	    local_planner->setPlan(plan);
 	  }
 	 else
@@ -168,7 +346,7 @@ int main(int argc, char** argv)
 
 	global_costmap = new costmap_2d::Costmap2DROS("global_costmap", *listener);
 	global_planner = new navfn::NavfnROS("global_planner", global_costmap);
-
+	  pub = n.advertise<std_msgs::Float64>("/topic_out", 1);
 	// Subscribe to and advertise topics
 	//ros::Subscriber sub_path = n.subscribe("/global_planner/navfn_planner/plan", 1, recvPath); //using navfn_global planner instead
 	ros::Subscriber sub_goal_new = n.subscribe("/marker_waypoints", 1, recvGoal_new);
@@ -176,8 +354,10 @@ int main(int argc, char** argv)
 	//ros::Subscriber sub_goal = n.subscribe("/move_base_simple/goal", 1, recvGoal); //uncomment to have goal be rviz 2d goal
 	//ros::Subscriber sub_customer = n.subscribe("/customer_array_markers", 1, recvCustomer);
 	pub_twist = n.advertise<geometry_msgs::Twist>("/roundbot/cmd_vel", 1);
+	pub_twisttest = n.advertise<geometry_msgs::Twist>("/test", 1);
+	pub_shortestPash = n.advertise<geometry_msgs::PoseArray>("/shortest_waypoints", 1);
 	//pub_goal = n.advertise<geometry_msgs::PoseStamped>("/global_planner/goal", 1);
-
+	ros::Subscriber sub_customers = n.subscribe("/customer_position_array", 1, parseCustomers);
 	// Set up timers
 	double freq;
 	pn.param("freq", freq, 20.0);

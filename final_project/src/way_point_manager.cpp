@@ -38,13 +38,18 @@ ros::Publisher pub_way_points;
 UTMCoords ref_utm;
 MarkerArray marker_msg;
 std_msgs::UInt16 currentWays;
+std_msgs::UInt16 currentWays2;
+
+
 uint currentWay = 0;
+uint currentWay2 = 0;
 //tf::StampedTransform transform;
 nav_msgs::Path path_msg;
 std_msgs::Float64MultiArray currentMarker;
 
 //new position marker to nav_stack_example
 geometry_msgs::PoseStamped currentMark;
+geometry_msgs::PoseStamped currentMark2;
 geometry_msgs::PoseArray customer_poses;
 geometry_msgs::PoseStamped pose_to_target;
 
@@ -54,10 +59,13 @@ double yTarget;
 double epsilon ;
 double xCurrent ;
 double yCurrent ;
+double xCurrent1 ;
+double yCurrent1 ;
 double x_dif ;
 double y_dif ;
-double distToMark ;
-
+long double distToTarget;
+double distToMark;
+int h = 0;
 
 
 
@@ -133,6 +141,7 @@ void recvCurrentPos(const nav_msgs::Odometry::ConstPtr& msg)
 
 }
 
+
 void parseCustomers(const geometry_msgs::PoseArray::ConstPtr  &pose_array)
 {
 
@@ -149,7 +158,6 @@ void parseCustomers(const geometry_msgs::PoseArray::ConstPtr  &pose_array)
 	 * 							currentWay could be used as pointer to the next customer to go to
 	 */
 	customer_poses = *pose_array;
-
 	pose_to_target.header.stamp =  ros::Time::now();
 	pose_to_target.header.frame_id = "/map";
 	//ros::Duration(1.5).sleep();
@@ -189,13 +197,13 @@ int main(int argc, char** argv)
 
 	//initialize the publishers
 	pub_markers = n.advertise<visualization_msgs::MarkerArray>("/marker_array", 1);		//for rviz
-	//pub_Waypoints = n.advertise<geometry_msgs::PoseStamped>("/marker_waypoints", 1);	//for control alg.  old
-	//pub_currentPoint = n.advertise<std_msgs::UInt16>("/current_point", 1);
+	pub_Waypoints = n.advertise<geometry_msgs::PoseStamped>("/marker_waypo", 1);	//for control alg.  old
+	pub_currentPoint = n.advertise<std_msgs::UInt16>("/current_point", 1);
 	pub_way_points = n.advertise<geometry_msgs::PoseStamped>("/marker_waypoints", 1);
 
 	//initialize the subscribers
 	ros::Subscriber sub_waypoints = n.subscribe("/odom", 1, recvCurrentPos);
-	ros::Subscriber sub_customers = n.subscribe("/customer_position_array", 1, parseCustomers);
+	ros::Subscriber sub_customers = n.subscribe("/shortest_waypoints", 1, parseCustomers);
 	// publish_customers = n.advertise<geometry_msgs::PoseArray>("/customer_position_array", 1);
 
 	ros::Timer timer = n.createTimer(ros::Duration(1),timerCallback);

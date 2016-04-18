@@ -340,6 +340,7 @@ void makeChessPieceMarker( const tf::Vector3& position )
 // %Tag(main)%
 int main(int argc, char** argv)
 {
+
   ros::init(argc, argv, "basic_controls");
   ros::NodeHandle n;
 
