@@ -167,8 +167,8 @@ if (firstGo ==0)
 		something.poses.push_back(temp_st.pose);
 		something.poses.push_back(temp_st1.pose);
 		something.poses.push_back(temp_st2.pose);
+		ros::Duration d = ros::Duration(3.0, 0);
 	    global_planner->makePlan(temp_st, temp_st1, plantopoint[0]);
-	    ros::Duration d = ros::Duration(10, 0);
 	    d.sleep();
 	    global_planner->makePlan( temp_st1, temp_st2,plantopoint[1]);
 	    d.sleep();
@@ -213,9 +213,11 @@ if (firstGo ==0)
 
 	    	y++;
 	    }
-	    distCalc[1] =distToTarget[5]+distToTarget[3]+distToTarget[1]+distToTarget[0];
-	    distCalc[0] = distToTarget[3]+distToTarget[4]+distToTarget[1]+distToTarget[2];
-	    distCalc[2] = distToTarget[5]+distToTarget[4]+distToTarget[0]+distToTarget[2];
+
+
+	    distCalc[0] = distToTarget[5]+distToTarget[4]+distToTarget[0]+distToTarget[2];
+	    distCalc[1] = distToTarget[3]+distToTarget[4]+distToTarget[1]+distToTarget[2];
+	    distCalc[2] =distToTarget[5]+distToTarget[3]+distToTarget[1]+distToTarget[0];
 	    ROS_INFO_STREAM("Here is a list of all partial distances\n");
 	    for(int kk = 0; kk < 7; kk++)
 	    {
@@ -227,13 +229,13 @@ if (firstGo ==0)
 		{
 	    	switch(ll){
 				case 0:
-					ROS_INFO_STREAM("path " << ll << " : PD4 + PD3 + PD2 + PD1" << distCalc[ll]);
+					ROS_INFO_STREAM("path " << ll << " : PD4 + PD3 + PD2 + PD1 = " << distCalc[ll]);
 					break;
 				case 1:
-					ROS_INFO_STREAM("path " << ll << " : PD5 + PD3 + PD1 + PD0" << distCalc[ll]);
+					ROS_INFO_STREAM("path " << ll << " : PD5 + PD3 + PD1 + PD0 = " << distCalc[ll]);
 					break;
 				case 2:
-					ROS_INFO_STREAM("path " << ll << " : PD5 + PD4 + PD2 + PD0" << distCalc[ll]);
+					ROS_INFO_STREAM("path " << ll << " : PD5 + PD4 + PD2 + PD0 = " << distCalc[ll]);
 					break;
 	    	}
 
