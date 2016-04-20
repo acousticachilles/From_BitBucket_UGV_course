@@ -148,7 +148,8 @@ void parseCustomers(const geometry_msgs::PoseArray::ConstPtr  &pose_array)
 
 	//temp space
 if (firstGo ==0)
-{ something.poses.clear();
+{
+		//something.poses.clear();
 		temp_st.header.frame_id = "/map";
 		temp_st1.header.frame_id = "/map";
 		temp_st2.header.frame_id = "/map";
@@ -167,11 +168,18 @@ if (firstGo ==0)
 		something.poses.push_back(temp_st1.pose);
 		something.poses.push_back(temp_st2.pose);
 	    global_planner->makePlan(temp_st, temp_st1, plantopoint[0]);
+	    ros::Duration d = ros::Duration(10, 0);
+	    d.sleep();
 	    global_planner->makePlan( temp_st1, temp_st2,plantopoint[1]);
+	    d.sleep();
 	    global_planner->makePlan(temp_st, temp_st2, plantopoint[2]);
+	    d.sleep();
 	    global_planner->makePlan( home, temp_st,plantopoint[3]);
+	    d.sleep();
 	    global_planner->makePlan( home, temp_st1,plantopoint[4]);
+	    d.sleep();
 	    global_planner->makePlan( home, temp_st2,plantopoint[5]);
+	    d.sleep();
 
 
 
@@ -179,7 +187,7 @@ if (firstGo ==0)
 
 
 	    int y = 0;
-	    while (y <6)
+	    while (y < 6)
 	    {
 	    	distToTarget[y] = 0;
 	    	int x = 1;
@@ -208,18 +216,42 @@ if (firstGo ==0)
 	    distCalc[1] =distToTarget[5]+distToTarget[3]+distToTarget[1]+distToTarget[0];
 	    distCalc[0] = distToTarget[3]+distToTarget[4]+distToTarget[1]+distToTarget[2];
 	    distCalc[2] = distToTarget[5]+distToTarget[4]+distToTarget[0]+distToTarget[2];
+	    ROS_INFO_STREAM("Here is a list of all partial distances\n");
+	    for(int kk = 0; kk < 7; kk++)
+	    {
+	    	ROS_INFO_STREAM("partial distance (PD) " << kk << " = " << distToTarget[kk]);
+	    }
+	    ROS_INFO_STREAM("The total path distance are define by the following sum of partial distances \n");
+	    std::string smallest = "";
+	    for(int ll = 0; ll < 3; ll++)
+		{
+	    	switch(ll){
+				case 0:
+					ROS_INFO_STREAM("path " << ll << " : PD4 + PD3 + PD2 + PD1" << distCalc[ll]);
+					break;
+				case 1:
+					ROS_INFO_STREAM("path " << ll << " : PD5 + PD3 + PD1 + PD0" << distCalc[ll]);
+					break;
+				case 2:
+					ROS_INFO_STREAM("path " << ll << " : PD5 + PD4 + PD2 + PD0" << distCalc[ll]);
+					break;
+	    	}
 
-
-	    something.poses[0].position.x=temp_st.pose.position.x ;
-	    something.poses[1].position.x=temp_st2.pose .position.x;
+		}
+	    something.poses[0].position.x = temp_st.pose.position.x ;
+	    something.poses[1].position.x = temp_st2.pose .position.x;
 	    something.poses[2].position.x = temp_st1.pose.position.x;
-	    something.poses[0].position.y=temp_st.pose.position.y ;
-	    something.poses[1].position.y=temp_st2.pose .position.y;
+	    something.poses[0].position.y = temp_st.pose.position.y ;
+	    something.poses[1].position.y = temp_st2.pose .position.y;
 	    something.poses[2].position.y = temp_st1.pose.position.y;
 
+	    ROS_INFO_STREAM("Which is smaller path 0 or 1 or 2? ");
+	    smallest = "0";
 	    if (distCalc[1] <  distCalc[0])
 	    {
+	    	smallest = "1";
 	    	distCalc[0] = distCalc[1];
+	    	smallest = 1;
 		    something.poses[0].position.x=temp_st.pose.position.x ;
 		    something.poses[1].position.x=temp_st1.pose.position.x ;
 		    something.poses[2].position.x = temp_st2.pose.position.x;
@@ -228,18 +260,21 @@ if (firstGo ==0)
 		    something.poses[2].position.y = temp_st2.pose.position.y;
 
 	    }
-	    	if ( distCalc[2] < distCalc[0])
-	    	{
-	    	    something.poses[0].position.x=temp_st1.pose.position.x ;
-	    	    something.poses[1].position.x=temp_st.pose.position.x ;
-	    	    something.poses[2].position.x = temp_st2.pose.position.x;
-	    	    something.poses[0].position.y=temp_st1.pose.position.y ;
-	    	    something.poses[1].position.y=temp_st.pose.position.y ;
-	    	    something.poses[2].position.y = temp_st2.pose.position.y;
 
-	    	}
+		if ( distCalc[2] < distCalc[0])
 
+		{
+			smallest = "2";
+			something.poses[0].position.x=temp_st1.pose.position.x ;
+			something.poses[1].position.x=temp_st.pose.position.x ;
+			something.poses[2].position.x = temp_st2.pose.position.x;
+			something.poses[0].position.y=temp_st1.pose.position.y ;
+			something.poses[1].position.y=temp_st.pose.position.y ;
+			something.poses[2].position.y = temp_st2.pose.position.y;
 
+		}
+
+		ROS_INFO_STREAM(smallest);
 	    twist_msgtest.linear.x =distToTarget[0];
 	    twist_msgtest.linear.y =distToTarget[1];
 	    twist_msgtest.linear.z =distToTarget[2];
