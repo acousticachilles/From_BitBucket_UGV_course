@@ -213,11 +213,9 @@ if (firstGo ==0)
 
 	    	y++;
 	    }
-
-
-	    distCalc[0] = distToTarget[5]+distToTarget[4]+distToTarget[0]+distToTarget[2];
-	    distCalc[1] = distToTarget[3]+distToTarget[4]+distToTarget[1]+distToTarget[2];
-	    distCalc[2] =distToTarget[5]+distToTarget[3]+distToTarget[1]+distToTarget[0];
+	    distCalc[1] =distToTarget[5]+distToTarget[3]+distToTarget[1]+distToTarget[0];
+	    distCalc[0] = distToTarget[3]+distToTarget[4]+distToTarget[1]+distToTarget[2];
+	    distCalc[2] = distToTarget[5]+distToTarget[4]+distToTarget[0]+distToTarget[2];
 	    ROS_INFO_STREAM("Here is a list of all partial distances\n");
 	    for(int kk = 0; kk < 7; kk++)
 	    {
